@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition-viem": "^0.13.1",
+    "@nomicfoundation/hardhat-toolbox-viem": "^2.0.0",
+    "hardhat": "^2.19.4"
+  }
+}
