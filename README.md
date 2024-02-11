@@ -2,10 +2,10 @@
 A voting system using the ethereum blockchain
 
 ## Was kann mein Voting?
-- Es gibt eine Liste an Filmen die eindeutig identifizierbar sind.
-- Diese Liste wird pro Voting Iteration festgelegt
-- Jeder kann für einen bestimmten Film voten
-- Es wird sichergestellt, dass jeder nur ein Mal voten kann
+- Es gibt eine Liste an Filmen die eindeutig identifizierbar sind. ✓
+- Diese Liste wird pro Voting Iteration festgelegt. ✓
+- Jeder kann für einen bestimmten Film voten. ✓
+- Es wird sichergestellt, dass jeder nur ein Mal voten kann. ✓
 - (optional) Es gibt einen Zeitpunkt zu dem das Voting automatisch beendet wird
 - Man kann die Ergebnisse bzw. den aktuellen Stand erst abrufen nachdem man gevotet hat
 - Zur Auswertung werden alle Stimmen aufsummiert und die Filme nach der Anzahl an Stimmen geordnet
