@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Dapp } from "./components/Dapp";
+import { Dapp } from "./boilerplate/Dapp";
 
 export default function Home() {
   return (
