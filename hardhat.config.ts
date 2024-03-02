@@ -1,8 +1,16 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox-viem";
+import "@nomicfoundation/hardhat-toolbox";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.19",
+  networks: {
+    localhost: {
+      url: "http://localhost:8545", // URL of your local Ethereum node
+    },
+  },
+  paths: {
+    artifacts: './frontend/src/artifacts', // Change this to your desired path
+  },
+  solidity: "0.8.24",
 };
 
 export default config;

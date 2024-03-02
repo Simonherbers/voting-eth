@@ -1,86 +1,35 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-// Uncomment this line to use console.log
-// import "hardhat/console.sol";
-
-contract Voting {
-    enum VoterState {
-        CREATED,
-        REGISTERED,
-        VOTED
+contract MovieVoting {
+    struct Movie {
+        uint256 id;
+        string name;
+        uint256 voteCount;
     }
-    address payable public creator;
-    string[] public movies;
 
-    // eligible movies to vote for
-    mapping (string => bool) private _moviesInVoting;
+    Movie[] public movies;
+    mapping(address => bool) public hasVoted;
 
-    // all movies mapped to their counts
-    mapping (string => uint) private _movieVoteCount;
+    event Voted(uint256 movieId);
 
-    // all voter addresses mapped to if they already voted
-    mapping (address => VoterState) private _voters;
-
-    event Vote(address who);
-
-    constructor(string[] _movies) payable {
-            //block.timestamp < _unlockTime,
-        require(
-            _movies.length > 0,
-            "Please provide at least one movie to vote for."
-        );
-
-        for (uint i = 0; i < _movies.length; i++) {
-            _moviesInVoting[_movies[i]] = true;
-            _movieVoteCount[_movies[i]] = 0;
+    constructor(string[] memory _movieNames) {
+        for (uint256 i = 0; i < _movieNames.length; i++) {
+            movies.push(Movie(i, _movieNames[i], 0));
         }
-        movies = _movies;
-        creator = payable(msg.sender);
-    }   
-
-    function register() public {
-        require(
-            _voters[msg.sender] == VoterState.CREATED,
-            "A voter can only be registered once."
-        );
-        _voters[msg.sender] = VoterState.REGISTERED;
     }
 
-    function vote(string _movie) public {
-        require(
-            _voters[msg.sender] == VoterState.REGISTERED,
-            "A voter has to be registered and can only vote once."
-        );
-        require(
-            _moviesInVoting[_movie] == true,
-            "This movie is not part of this voting's selection."
-        );
-        _movieVoteCount[_movie] = _movieVoteCount[_movie] + 1;
-        _voters[msg.sender] = VoterState.VOTED;
+    function vote(uint256 _movieId) external {
+        require(!hasVoted[msg.sender], "Already voted");
+        require(_movieId < movies.length, "Invalid movie ID");
 
-        // maybe this should be kept secret
-        emit Vote(msg.sender);
+        movies[_movieId].voteCount++;
+        hasVoted[msg.sender] = true;
+
+        emit Voted(_movieId);
     }
 
-    function results() public {
-        mapping (string => uint) [] _results;
-        for (uint i = 0; i < movies.length; i++) {
-            _results.push(movies[i], _movieVoteCount[movies[i]]);
-        }
-        // HERE
-        // return something like an object, a mapping or a tuple
+    function getMoviesCount() external view returns (uint256) {
+        return movies.length;
     }
-
-    // function withdraw() public {
-    //     // Uncomment this line, and the import of "hardhat/console.sol", to print a log in your terminal
-    //     // console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);
-// 
-    //     require(block.timestamp >= unlockTime, "You can't withdraw yet");
-    //     require(msg.sender == creator, "You aren't the owner");
-// 
-    //     emit Withdrawal(address(this).balance, block.timestamp);
-// 
-    //     creator.transfer(address(this).balance);
-    // }
 }

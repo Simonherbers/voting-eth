@@ -1,26 +1,24 @@
-import { formatEther, parseEther } from "viem";
-import hre from "hardhat";
+// scripts/deploy.ts
+import { ethers } from 'hardhat';
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = BigInt(currentTimestampInSeconds + 60);
+  const [deployer] = await ethers.getSigners();
 
-  const lockedAmount = parseEther("0.001");
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  const lock = await hre.viem.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+  const MovieVoting = await ethers.getContractFactory("MovieVoting");
+  const movieNames = ["Movie 1", "Movie 2", "Movie 3"]; // Add your movie names here
+  const deploymentTx = await MovieVoting.deploy(movieNames);
 
-  console.log(
-    `Lock with ${formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+  // Access the deployed contract's address directly from the deployment transaction
+  const deployedContractAddress = await deploymentTx.getAddress();
+
+  console.log("MovieVoting deployed to:", deployedContractAddress);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
