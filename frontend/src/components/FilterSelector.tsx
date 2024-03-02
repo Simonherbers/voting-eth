@@ -2,12 +2,9 @@
 
 import React from "react";
 
-interface FilterSelectorProps {
+export interface FilterSelectorProps {
   filters: {
-    sortBy: string;
-    with_keywords: string;
     year: string;
-    with_people: string;
     searchTerm: string;
   };
   onFilterChange: (name: string, value: string) => void;
@@ -30,8 +27,9 @@ const FilterSelector: React.FC<FilterSelectorProps> = ({
         Sort By:
         <select
           name="sortBy"
-          value={filters.sortBy}
+          value="popularity.desc"
           onChange={handleInputChange}
+          disabled
         >
           <option value="popularity.desc">Popularity Descending</option>
           <option value="popularity.asc">Popularity Ascending</option>
@@ -40,29 +38,11 @@ const FilterSelector: React.FC<FilterSelectorProps> = ({
         </select>
       </label>
       <label>
-        Keywords:
-        <input
-          type="text"
-          name="with_keywords"
-          value={filters.with_keywords}
-          onChange={handleInputChange}
-        />
-      </label>
-      <label>
         Year:
         <input
           type="text"
           name="year"
           value={filters.year}
-          onChange={handleInputChange}
-        />
-      </label>
-      <label>
-        People:
-        <input
-          type="text"
-          name="with_people"
-          value={filters.with_people}
           onChange={handleInputChange}
         />
       </label>

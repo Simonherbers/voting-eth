@@ -38,3 +38,41 @@
     opacity: 1;
   }
   
+
+
+  .container {
+    position: relative;
+    /*width: 200px; /* Adjust as needed */
+    /*height: 150px; /* Adjust as needed */
+  }
+
+
+  /* ############################################################################### */
+input[type=checkbox] {
+  position: relative;
+  cursor: pointer;
+  z-index: 999;
+  position: absolute;
+  top: 10px; /* Adjust for desired position */
+  left: 10px; /* Adjust for desired position */
+  width: 30px; /* Adjust size of checkbox */
+  height: 30px; /* Adjust size of checkbox */
+  background-color: #fff; /* Background color of checkbox */
+  border: 1px solid #000; /* Border of checkbox */
+  border-radius: 50%; /* Make the checkbox round */
+}
+input[type=checkbox]:before {
+}
+input[type=checkbox]:checked:after {
+  content: '';
+  display: block;
+  width: 10px; /* Size of the inner circle */
+  height: 10px; /* Size of the inner circle */
+  background-color: #000; /* Color of the inner circle */
+  border-radius: 50%; /* Make the inner circle round */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0); /* Initially hide the inner circle */
+  transition: transform 0.2s ease; /* Add a transition effect */
+}

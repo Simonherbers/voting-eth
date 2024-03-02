@@ -9,6 +9,7 @@ import {
   Route,
 } from "react-router-dom";
 import MovieDetail from "./pages/MovieDetail";
+import ConfigurationPage from "./pages/ContractDeploymentPage";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -18,7 +19,8 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/movie/:id" element={<MovieDetail/> } />
+        <Route path="/movie/:id" element={<MovieDetail />} />
+        <Route path="/configuration" element={<ConfigurationPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
