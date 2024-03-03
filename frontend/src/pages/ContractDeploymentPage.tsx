@@ -1,60 +1,52 @@
 // ConfigurationPage.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import contractArtifact from "../artifacts/contracts/Voting.sol/MovieVoting.json";
 import NavigationHeader from "../components/NavigationHeader";
+import { deployContract, getContract } from "../utility/ContractService";
 
 const ConfigurationPage = () => {
-  const [deployedContractAddress, setDeployedContractAddress] = useState("");
   const [movieNames, setMovieNames] = useState<string[]>([]);
-  const [newMovieName, setNewMovieName] = useState('');
+  const [newMovieName, setNewMovieName] = useState("");
+  const [movieVotes, setMovieVotes] = useState<
+    { name: string; voteCount: number }[]
+  >([]);
 
-  const handleDeployContract = async () => {
-    try {
-      // Split movie names input into an array
-      const movieNamesArray = movieNames;
+  useEffect(() => {
+    const fetchMovieVotes = async () => {
+      try {
+        const contract = await getContract();
+        let count = await contract.getMoviesCount();
+        const proxy = await contract.getAllVotes(); // Assuming getAllVotes returns (string[], uint256[])
+        const movieNames = proxy[0];
+        const movieVoteCounts = proxy[1];
 
-      // Connect to Ethereum network
-      const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
+        // Merge the lists into a single list
+        let list = [];
+        for (let i = 0; i < movieNames.length; i++) {
+          list.push({ name: movieNames[i], voteCount: movieVoteCounts[i] });
+        }
 
-      // Get signer (account) from provider
-      const signer = await provider.getSigner();
-
-      // Load contract factory
-      const contractFactory = new ethers.ContractFactory(
-        // ABI of the contract (you need to replace this with your contract's ABI)
-        contractArtifact.abi, // Example ABI with a constructor that takes an array of strings
-        // Bytecode of the contract (you need to replace this with your contract's bytecode)
-        contractArtifact.bytecode, // Example bytecode of a simple contract
-        // Signer (account) to deploy the contract
-        signer
-      );
-
-      // Deploy contract
-      const deployedContract = await contractFactory.deploy(movieNamesArray);
-
-      // Wait for deployment transaction to be mined
-      await deployedContract.waitForDeployment();
-
-      // Set deployed contract address
-      setDeployedContractAddress(await deployedContract.getAddress());
-    } catch (error) {
-      console.error("Error deploying contract:", error);
-    }
-}
-
-
-const handleAddMovie = () => {
-    if (newMovieName.trim() !== '') {
-        setMovieNames([...movieNames, newMovieName]);
-        setNewMovieName('');
-    }
-  };
+        setMovieVotes(list);
+      } catch (error) {
+        console.error("Error fetching movie votes:", error);
+      }
+    };
+    fetchMovieVotes();
+  }, []); // Fetch movie votes on component mount
 
   return (
     <div>
       <NavigationHeader />
-      <h1>Configuration Page</h1>
+      <h2>Movie Votes</h2>
+      <ul>
+        {movieVotes.map((movie, index) => (
+          <li key={index}>
+            {movie.name} - Votes: {movie.voteCount}
+          </li>
+        ))}
+      </ul>
+      {/* <h1>Configuration Page</h1>
       <div className="movie-list-container">
       <h2>List of Movies</h2>
       <ul className="movie-list">
@@ -71,7 +63,7 @@ const handleAddMovie = () => {
         />
         <button onClick={handleAddMovie}>Add Movie</button>
       </div>
-    </div>
+    </div> */}
     </div>
   );
 };

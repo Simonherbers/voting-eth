@@ -6,6 +6,8 @@ import { useParams } from "react-router-dom"; // Import useParams hook
 import "./MovieDetail.css";
 import { ethers } from "ethers"; // Import ethers
 import contractArtifact from "../artifacts/contracts/Voting.sol/MovieVoting.json";
+import NavigationHeader from "../components/NavigationHeader";
+import { getContract } from "../utility/ContractService";
 
 interface MovieDetail {
   title: string;
@@ -46,26 +48,10 @@ const MovieDetail: React.FC = () => {
   }, [id]); // Fetch movie detail whenever ID changes
 
   useEffect(() => {
-    // Initialize contract instance
-    const initContract = async () => {
-      try {
-        // Replace with your contract address and ABI
-        const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
-        const contractABI = contractArtifact.abi; // Your contract ABI array
-        const provider = new ethers.JsonRpcProvider("http://localhost:8545");
-        const signer = await provider.getSigner();
-        const contract = new ethers.Contract(
-          contractAddress,
-          contractABI,
-          signer
-        );
-        setMovieVotingContract(contract);
-      } catch (error) {
-        console.error("Error initializing contract:", error);
-      }
-    };
-
-    initContract();
+    async function a() {
+      setMovieVotingContract(await getContract());
+    }
+    a();
   }, []);
 
   const handleVote = async () => {
@@ -74,7 +60,8 @@ const MovieDetail: React.FC = () => {
         throw new Error("Contract not initialized");
       }
       const movieId = parseInt(id!); // Assuming the movie ID is numeric
-      await movieVotingContract.vote(movieId);
+      //await movieVotingContract.vote(movieId);
+      await movieVotingContract.vote(1); ////////////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       alert("Vote successfully casted!");
     } catch (error) {
       console.error("Error casting vote:", error);
@@ -103,49 +90,52 @@ const MovieDetail: React.FC = () => {
   }
 
   return (
-    <div className="movie-detail-container">
-      <div className="movie-detail-image">
-        <img
-          src={`https://image.tmdb.org/t/p/w500/${movieDetail.poster_path}`}
-          alt={movieDetail.title}
-        />
-      </div>
-      <div className="movie-detail-info">
-        <h1>{movieDetail.title}</h1>
-        <h3>Rating:</h3>
-        <div className="rating-ring">
-          <svg>
-            <circle
-              cx="50%"
-              cy="50%"
-              r="40%"
-              stroke="#ccc"
-              strokeWidth="8"
-              fill="none"
-            />
-            <circle
-              cx="50%"
-              cy="50%"
-              r="40%"
-              stroke={ringColor}
-              strokeWidth="8"
-              fill="none"
-              style={{
-                strokeDasharray,
-                strokeDashoffset,
-              }}
-            />
-          </svg>
-          <p className="rating">{movieDetail.vote_average}</p>
+    <div>
+      <NavigationHeader />
+      <div className="movie-detail-container">
+        <div className="movie-detail-image">
+          <img
+            src={`https://image.tmdb.org/t/p/w500/${movieDetail.poster_path}`}
+            alt={movieDetail.title}
+          />
         </div>
-        <div>
-          <h3>Release Date:</h3> {movieDetail.release_date}
+        <div className="movie-detail-info">
+          <h1>{movieDetail.title}</h1>
+          <h3>Rating:</h3>
+          <div className="rating-ring">
+            <svg>
+              <circle
+                cx="50%"
+                cy="50%"
+                r="40%"
+                stroke="#ccc"
+                strokeWidth="8"
+                fill="none"
+              />
+              <circle
+                cx="50%"
+                cy="50%"
+                r="40%"
+                stroke={ringColor}
+                strokeWidth="8"
+                fill="none"
+                style={{
+                  strokeDasharray,
+                  strokeDashoffset,
+                }}
+              />
+            </svg>
+            <p className="rating">{movieDetail.vote_average}</p>
+          </div>
+          <div>
+            <h3>Release Date:</h3> {movieDetail.release_date}
+          </div>
+          <div>
+            <h3>Description:</h3>
+            {movieDetail.overview}
+          </div>
+          <button onClick={handleVote}>Vote for this movie</button>
         </div>
-        <div>
-          <h3>Description:</h3>
-          {movieDetail.overview}
-        </div>
-        <button onClick={handleVote}>Vote for this movie</button>
       </div>
     </div>
   );

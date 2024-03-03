@@ -1,0 +1,53 @@
+/* Custom styles for select */
+select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    color: #333;
+    appearance: none; /* Remove default dropdown arrow */
+  }
+  
+  /* Custom styles for input */
+  input[type="text"],
+  input[type="password"],
+  input[type="number"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    color: #333;
+  }
+  
+  /* Custom styles for hover and focus effects */
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: #007bff; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow on focus */
+  }
+  
+  /* Custom styles for disabled state */
+  input:disabled,
+  select:disabled {
+    opacity: 0.7; /* Reduce opacity for disabled fields */
+    cursor: not-allowed; /* Change cursor to not-allowed for disabled fields */
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    margin-left: 10px;
+  }
+  
+  label {
+    font-weight: bold;
+  }

@@ -5,6 +5,7 @@ const config: HardhatUserConfig = {
   networks: {
     localhost: {
       url: "http://localhost:8545", // URL of your local Ethereum node
+      gasPrice: 0
     },
   },
   paths: {

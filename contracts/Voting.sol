@@ -32,4 +32,14 @@ contract MovieVoting {
     function getMoviesCount() external view returns (uint256) {
         return movies.length;
     }
+
+    function getAllVotes() external view returns (string[] memory, uint256[] memory) {
+        string[] memory movieNames = new string[](movies.length);
+        uint256[] memory voteCounts = new uint256[](movies.length);
+        for (uint256 i = 0; i < movies.length; i++) {
+            movieNames[i] = movies[i].name;
+            voteCounts[i] = movies[i].voteCount;
+        }
+        return (movieNames, voteCounts);
+    }
 }

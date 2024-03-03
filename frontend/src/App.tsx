@@ -24,7 +24,7 @@ function App() {
   return (
     <div>
       <NavigationHeader />
-      <h1>Popular Movies</h1>
+      <h1>Today's Voting</h1>
       <FilterSelector filters={filters} onFilterChange={handleFilterChange} />
       <PopularMovies filters={filters} />
     </div>
