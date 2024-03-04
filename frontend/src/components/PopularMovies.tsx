@@ -60,7 +60,7 @@ const PopularMovies: React.FC<PopularMoviesProps> = ({ filters }) => {
         allMovies.filter(
           (movie) =>
             filters.searchTerm === "" ||
-            movie.title.includes(filters.searchTerm)
+            movie.title.toLowerCase().includes(filters.searchTerm.toLowerCase())
         )
       );
     } catch (error) {
