@@ -1,43 +1,10 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import { Contract } from "ethers";
-import contractArtifact from "../frontend/src/artifacts/contracts/Voting.sol/MovieVoting.json";
 import {
-  time,
   loadFixture,
 } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 
 describe("MovieVoting", function () {
-  let MovieVoting: Contract;
-  //let owner: SignerWithAddress;
-  //let user: SignerWithAddress;
-  let contract: Contract;
-
-  /*
-  beforeEach(async function () {
-    //const provider = new ethers.JsonRpcProvider("http://localhost:8545");
-    //const signer = await provider.getSigner();
-
-    // Contracts are deployed using the first signer/account by default
-    const [owner, otherAccount] = await ethers.getSigners();
-    const MovieVoting = await ethers.getContractFactory("MovieVoting");
-    const contract = await MovieVoting.deploy(["Movie 1", "Movie 2", "Movie 3"]);
-    await contract.waitForDeployment()
-    
-    //const MovieVotingFactory = await new ethers.ContractFactory(contractArtifact.abi, contractArtifact.bytecode, signer);
-    //let MovieVoting = await MovieVotingFactory.deploy(["Movie 1", "Movie 2", "Movie 3"]);
-    //await MovieVoting.waitForDeployment();
-    
-    
-    //contract = new ethers.Contract(
-    //    await MovieVoting.getAddress(),
-    //    contractArtifact.abi,
-    //    provider
-    //  );
-      
-  });
-  */
 
   async function deployContract() {
     const [owner, otherAccount] = await ethers.getSigners();
@@ -53,7 +20,7 @@ describe("MovieVoting", function () {
     const movieNamesAndVotes = await contract.getAllVotes();
     expect(movieNamesAndVotes[0]).to.deep.equal(["Movie 1", "Movie 2", "Movie 3"]);
     for (let i = 0; i < 3; i++) {
-      expect(movieNamesAndVotes[1][i]).to.be.greaterThanOrEqual(0);
+      expect(movieNamesAndVotes[1][i]).to.be.greaterThan(0);
     }
   });
 

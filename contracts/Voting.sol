@@ -16,7 +16,7 @@ contract MovieVoting {
 
     constructor(string[] memory _movieNames) {
         for (uint256 i = 0; i < _movieNames.length; i++) {
-            movies.push(Movie(i, _movieNames[i], generateRandomNumber()));
+            movies.push(Movie(i, _movieNames[i], generateRandomNumber())); // remove random number in production
         }
     }
 
