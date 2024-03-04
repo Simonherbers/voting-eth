@@ -1,9 +1,8 @@
 // ConfigurationPage.jsx
 import React, { useEffect, useState } from "react";
-import { ethers } from "ethers";
 import contractArtifact from "../artifacts/contracts/Voting.sol/MovieVoting.json";
 import NavigationHeader from "../components/NavigationHeader";
-import { deployContract, getContract } from "../utility/ContractService";
+import { getContract } from "../utility/ContractService";
 
 const ConfigurationPage = () => {
   const [movieNames, setMovieNames] = useState<string[]>([]);

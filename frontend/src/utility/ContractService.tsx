@@ -1,11 +1,17 @@
-import { ethers } from "ethers";
+import { ethers } from "hardhat";
 import { fetchMovies } from "./MovieService";
 import contractArtifact from "../artifacts/contracts/Voting.sol/MovieVoting.json";
+import { Contract } from "@ethersproject/contracts";
 
-const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
+//const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
 
-export async function deployContract() {
+let contract = null;
+let owner = null;
+let otherAccount = null;
+
+async function deployContract() {
   try {
+    /*
     // Split movie names input into an array
     const movies = await fetchMovies();
     const movieNamesArray = movies.map((obj) => obj.title);
@@ -33,23 +39,44 @@ export async function deployContract() {
     // Set deployed contract address
     const address = await deployedContract.getAddress();
     localStorage.setItem("contractAddress", address);
-    console.log("contractAddress: " + address);
+    console.log("contractAddress: " + address);*/
+    [owner, otherAccount] = await ethers.getSigners();
+    const MovieVoting = await ethers.getContractFactory("MovieVoting");
+    contract = await MovieVoting.deploy(["Movie 1", "Movie 2", "Movie 3"]);
+    await contract.waitForDeployment();
+    localStorage.setItem("address", contract.getAddress());
+
+    //localStorage.setItem("owner", owner);
+    //localStorage.setItem("otherAccount", otherAccount);
+    //return {contract, owner, otherAccount};
   } catch (error) {
     console.error("Error deploying contract:", error);
   }
 }
 
 export async function getContract() {
-  let contractAddress = localStorage.getItem("contractAddress");
-  if (contractAddress === null) {
+  let deployed = localStorage.getItem("address");
+  if (deployed === null) {
     await deployContract();
-    contractAddress = localStorage.getItem("contractAddress");
   }
 
-  const contract = new ethers.Contract(
-    contractAddress!,
-    contractArtifact.abi,
-    provider
-  );
-  return contract;
+  return contract!;
 }
+export async function getOwner() {
+  let deployed = localStorage.getItem("address");
+  if (deployed === null) {
+    await deployContract();
+  }
+
+  return owner!;
+}
+/*
+export async function getOtherAccount() {
+  let deployed = localStorage.getItem("address");
+  if (deployed === null) {
+    await deployContract();
+  }
+
+  return otherAccount!;
+}
+*/
