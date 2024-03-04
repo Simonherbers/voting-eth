@@ -12,12 +12,15 @@ let deployedContract:ethers.BaseContract & {
 async function deployContract() {
   try {
     
+    if(localStorage.getItem("address") !== null){
+      return;
+    }
     // Split movie names input into an array
     const movies = await fetchMovies();
     const movieNamesArray = movies.map((obj) => obj.title);
     
-    const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
     // Connect to Ethereum network
+    const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
     
     // Get signer (account) from provider
     const signer = await provider.getSigner();
@@ -59,10 +62,18 @@ async function deployContract() {
   }
 }
 
+export async function reDeploy() {
+  await deployContract()
+}
+
 export async function getContract() {
-  let deployed = localStorage.getItem("address");
-  if (deployed === null) {
+  let address = localStorage.getItem("address");
+  if (address === null) {
     await deployContract();
+  }
+  if (deployedContract === null && address !== null){
+    const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
+    return new ethers.Contract(address, contractArtifact.abi, provider);
   }
 
   return deployedContract;

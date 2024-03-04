@@ -23,9 +23,7 @@ const MovieDetail: React.FC = () => {
   // Add state to store contract instance
   const [movieVotingContract, setMovieVotingContract] =
     useState<
-    ethers.BaseContract & {
-      deploymentTransaction(): ethers.ContractTransactionResponse;
-    } & Omit<ethers.BaseContract, keyof ethers.BaseContract> | null
+    any
     >(null);
 
   useEffect(() => {
@@ -59,12 +57,19 @@ const MovieDetail: React.FC = () => {
 
   const handleVote = async () => {
     try {
-      if (!movieVotingContract) {
+      const contract = await getContract()
+      if (!contract) {
         throw new Error("Contract not initialized");
       }
-      const movieId = parseInt(id!); // Assuming the movie ID is numeric
+      console.log(contract)
+      if(!movieDetail) {
+        console.log("no movie detail");
+        return;
+      }
+      console.log("Title:" + movieDetail.title)
+      const contractId = (contract as any).getMovieIdByName(movieDetail.title)
       //await movieVotingContract.vote(movieId);
-      await (movieVotingContract as any).vote(1); ////////////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      await (contract as any).vote(contractId); ////////////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       alert("Vote successfully casted!");
     } catch (error) {
       console.error("Error casting vote:", error);

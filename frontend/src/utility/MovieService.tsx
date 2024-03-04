@@ -1,5 +1,6 @@
 import axios from "axios";
 
+const API_KEY = "ef1c9eedb88ac226fd038f67c7294250"
 export const fetchMovies = async () => {
   try {
     const totalPages = 5; // Adjust as needed
@@ -10,7 +11,7 @@ export const fetchMovies = async () => {
         "https://api.themoviedb.org/3/discover/movie",
         {
           params: {
-            api_key: "ef1c9eedb88ac226fd038f67c7294250",
+            api_key: API_KEY,
             language: "en-US",
             include_adult: false,
             include_video: false,

@@ -1,0 +1,39 @@
+#ranking {
+    list-style: none;
+    padding: 0;
+}
+
+#ranking li {
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+    /* Default background color */
+}
+
+/* Define different background colors for top 10 entries */
+#ranking li:nth-child(1) {
+    background-color: #4a91ee;
+    /* Bright color for top entry */
+}
+
+#ranking li:nth-child(2) {
+    background-color: #6f9fdd;
+}
+
+#ranking li:nth-child(3) {
+    background-color: #8bb1e4;
+}
+#ranking li:nth-child(4) {
+    background-color: #b1cef5;
+}
+
+/* Add more styles for other entries as needed */
+
+/* Fade out colors for lower ranked entries */
+#ranking li:nth-child(n+5) {
+    background-color: #f0f0f0;
+    /* Default background color */
+    opacity: 0.8;
+    /* Adjust opacity to fade out */
+}
