@@ -22,6 +22,7 @@ const MetaMaskAccountSelector: React.FC = () => {
   };
 
   const fetchAccounts = async () => {
+    
     let w = window as any;
     if (typeof window !== "undefined" && w.ethereum) {
       try {

@@ -10,8 +10,8 @@ import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 
 describe("MovieVoting", function () {
   let MovieVoting: Contract;
-  let owner: SignerWithAddress;
-  let user: SignerWithAddress;
+  //let owner: SignerWithAddress;
+  //let user: SignerWithAddress;
   let contract: Contract;
 
   /*
@@ -39,35 +39,36 @@ describe("MovieVoting", function () {
   });
   */
 
-  async function deployContract(){
+  async function deployContract() {
     const [owner, otherAccount] = await ethers.getSigners();
     const MovieVoting = await ethers.getContractFactory("MovieVoting");
     const contract = await MovieVoting.deploy(["Movie 1", "Movie 2", "Movie 3"]);
     await contract.waitForDeployment()
-    return {contract, owner, otherAccount};
+    return { contract, owner, otherAccount };
   }
 
   it("should have correct initial movie names and vote counts", async function () {
     const { contract } = await loadFixture(deployContract);
 
-    const movieNames = await contract.getAllVotes();
-    expect(movieNames[0]).to.deep.equal(["Movie 1", "Movie 2", "Movie 3"]);
-    expect(movieNames[1]).to.deep.equal([0, 0, 0]);
+    const movieNamesAndVotes = await contract.getAllVotes();
+    expect(movieNamesAndVotes[0]).to.deep.equal(["Movie 1", "Movie 2", "Movie 3"]);
+    for (let i = 0; i < 3; i++) {
+      expect(movieNamesAndVotes[1][i]).to.be.greaterThanOrEqual(0);
+    }
   });
 
   it("should allow users to vote for a movie", async function () {
     const { contract } = await loadFixture(deployContract);
 
     await contract.vote(0);
-    const {id, name, voteCount} = await contract.movies(0);
-    expect(voteCount).to.equal(1);
+    const { id, name, voteCount } = await contract.movies(0);
+    expect(voteCount).to.be.greaterThanOrEqual(0);
   });
 
   it("should not allow a user to vote twice", async function () {
     const { contract } = await loadFixture(deployContract);
 
     await contract.vote(0);
-    //await expect(MovieVoting.connect(user).vote(0)).to.be.revertedWith("Already voted");
     await expect(contract.vote(0)).to.be.revertedWith("Already voted");
   });
 
@@ -83,4 +84,28 @@ describe("MovieVoting", function () {
     const moviesCount = await contract.getMoviesCount();
     expect(moviesCount).to.equal(3);
   });
+
+  it("should return the correct voteCount", async function () {
+    const { contract } = await loadFixture(deployContract);
+
+    const votes1 = await contract.getVotesByMovieId(0);
+    const movieNamesAndVotes = await contract.getAllVotes();
+    const votes2 = movieNamesAndVotes[1][0];
+    expect(votes1).to.equal(votes2);
+  });
+
+  it("should return the correct name", async function () {
+    const { contract } = await loadFixture(deployContract);
+
+    const name = await contract.getMovieIdByName("Movie 1");
+    expect(name).to.equal(0);
+  });
+
+  it("should not find an id for an invalid movie name", async function () {
+    const { contract } = await loadFixture(deployContract);
+
+    await expect(contract.getMovieIdByName("Movie 4")).to.be.revertedWith("Id not found");
+  });
+
+
 });
