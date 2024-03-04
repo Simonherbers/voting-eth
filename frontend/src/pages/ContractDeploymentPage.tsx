@@ -10,7 +10,7 @@ const ConfigurationPage = () => {
   const [movieVotes, setMovieVotes] = useState<
     { name: string; voteCount: number }[]
   >([]);
-
+/*
   useEffect(() => {
     const fetchMovieVotes = async () => {
       try {
@@ -33,7 +33,7 @@ const ConfigurationPage = () => {
     };
     fetchMovieVotes();
   }, []); // Fetch movie votes on component mount
-
+*/
   return (
     <div>
       <NavigationHeader />
