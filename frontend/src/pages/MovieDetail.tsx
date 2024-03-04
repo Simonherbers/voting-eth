@@ -48,12 +48,6 @@ const MovieDetail: React.FC = () => {
     fetchMovieDetail();
   }, [id]); // Fetch movie detail whenever ID changes
 
-  useEffect(() => {
-    async function a() {
-      setMovieVotingContract(await getContract());
-    }
-    a();
-  }, []);
 
   const handleVote = async () => {
     try {
@@ -71,9 +65,15 @@ const MovieDetail: React.FC = () => {
       //await movieVotingContract.vote(movieId);
       await (contract as any).vote(contractId); ////////////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       alert("Vote successfully casted!");
-    } catch (error) {
-      console.error("Error casting vote:", error);
-      alert("Failed to cast vote. Please try again.");
+    } catch (error: any) {
+      if(error.toString().includes("Already voted")){
+        console.error("Error casting vote:", error);
+        alert("Already Voted!");
+      }
+      else{
+        console.error("Error casting vote:", error);
+        alert("Failed to cast vote. Please try again. Error message: \n" + error);
+      }
     }
   };
 

@@ -12,7 +12,7 @@ let deployedContract:ethers.BaseContract & {
 async function deployContract() {
   try {
     
-    if(localStorage.getItem("address") !== null){
+    if(localStorage.getItem("address") !== ""){
       return;
     }
     // Split movie names input into an array
@@ -63,6 +63,7 @@ async function deployContract() {
 }
 
 export async function reDeploy() {
+  localStorage.setItem("address", "")
   await deployContract()
 }
 
