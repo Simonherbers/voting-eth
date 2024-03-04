@@ -8,8 +8,8 @@ import {
   Routes, // instead of "Switch"
   Route,
 } from "react-router-dom";
-import MovieDetail from "./pages/MovieDetail";
 import ConfigurationPage from "./pages/ContractDeploymentPage";
+import MovieDetail from "./pages/MovieDetail";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

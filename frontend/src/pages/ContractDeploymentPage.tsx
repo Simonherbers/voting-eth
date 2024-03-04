@@ -1,12 +1,11 @@
 // ConfigurationPage.jsx
 import React, { useEffect, useState } from "react";
-import contractArtifact from "../artifacts/contracts/Voting.sol/MovieVoting.json";
 import NavigationHeader from "../components/NavigationHeader";
 import { getContract } from "../utility/ContractService";
 
 const ConfigurationPage = () => {
-  const [movieNames, setMovieNames] = useState<string[]>([]);
-  const [newMovieName, setNewMovieName] = useState("");
+  //const [movieNames, setMovieNames] = useState<string[]>([]);
+  //const [newMovieName, setNewMovieName] = useState("");
   const [movieVotes, setMovieVotes] = useState<
     { name: string; voteCount: number }[]
   >([]);
@@ -14,8 +13,8 @@ const ConfigurationPage = () => {
   useEffect(() => {
     const fetchMovieVotes = async () => {
       try {
-        const contract = await getContract();
-        let count = await contract.getMoviesCount();
+        const contract = (await getContract() as any);
+        //let count = await contract.getMoviesCount();
         const proxy = await contract.getAllVotes(); // Assuming getAllVotes returns (string[], uint256[])
         const movieNames = proxy[0];
         const movieVoteCounts = proxy[1];
@@ -26,7 +25,7 @@ const ConfigurationPage = () => {
           list.push({ name: movieNames[i], voteCount: movieVoteCounts[i] });
         }
 
-        setMovieVotes(list);
+        //setMovieVotes(list);
       } catch (error) {
         console.error("Error fetching movie votes:", error);
       }

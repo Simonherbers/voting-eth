@@ -5,11 +5,10 @@ import axios from "axios";
 import { useParams } from "react-router-dom"; // Import useParams hook
 import "./MovieDetail.css";
 import { ethers } from "ethers"; // Import ethers
-import contractArtifact from "../artifacts/contracts/Voting.sol/MovieVoting.json";
 import NavigationHeader from "../components/NavigationHeader";
 import { getContract } from "../utility/ContractService";
 
-interface MovieDetail {
+interface MovieDetailInterface {
   title: string;
   poster_path: string;
   vote_average: number;
@@ -19,11 +18,15 @@ interface MovieDetail {
 
 const MovieDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Retrieve movie ID from URL params
-  const [movieDetail, setMovieDetail] = useState<MovieDetail | null>(null);
+  const [movieDetail, setMovieDetail] = useState<MovieDetailInterface | null>(null);
 
   // Add state to store contract instance
   const [movieVotingContract, setMovieVotingContract] =
-    useState<ethers.Contract | null>(null);
+    useState<
+    ethers.BaseContract & {
+      deploymentTransaction(): ethers.ContractTransactionResponse;
+    } & Omit<ethers.BaseContract, keyof ethers.BaseContract> | null
+    >(null);
 
   useEffect(() => {
     const fetchMovieDetail = async () => {
@@ -61,7 +64,7 @@ const MovieDetail: React.FC = () => {
       }
       const movieId = parseInt(id!); // Assuming the movie ID is numeric
       //await movieVotingContract.vote(movieId);
-      await movieVotingContract.vote(1); ////////////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      await (movieVotingContract as any).vote(1); ////////////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       alert("Vote successfully casted!");
     } catch (error) {
       console.error("Error casting vote:", error);
