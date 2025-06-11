@@ -1,13 +1,25 @@
-# Sample Hardhat Project
+# Commands
+```bash
+// Compile
+npx hardhat compile
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
+// Test
 npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+
+// Deploy to local chain
+npx hardhat ignition deploy ./ignition/modules/Voting.js
+
+// Deploy to remote network
+npx hardhat ignition deploy ./ignition/modules/Voting.js --network sepolia
+```
+
+# Remote Chain Sepolia
+```
+// infura.io
+npx hardhat vars set INFURA_API_KEY
+
+// Metamask Account 1 private key
+npx hardhat vars set SEPOLIA_PRIVATE_KEY
+
+Bereits deployter contract: 0x375a746A9cF2CC534b8eeA0A6050745D13D79E75
 ```

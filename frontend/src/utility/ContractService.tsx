@@ -1,13 +1,22 @@
 import { ethers } from "ethers";
 import { fetchMovies } from "./MovieService";
 import contractArtifact from "../artifacts/contracts/Voting.sol/MovieVoting.json";
-
+import { config } from "../config";
+import { get } from "http";
 
 let deployedContract:ethers.BaseContract & {
   deploymentTransaction(): ethers.ContractTransactionResponse;
 } & Omit<ethers.BaseContract, keyof ethers.BaseContract> | null = null;
 //let owner = null;
 //let otherAccount = null;
+
+async function getProvider() {
+  if (!(window as any).ethereum) {
+      throw new Error("MetaMask is not installed");
+  }
+  await (window as any).ethereum.request({ method: "eth_requestAccounts" });
+  return new ethers.BrowserProvider((window as any).ethereum, "sepolia");
+}
 
 async function deployContract() {
   try {
@@ -20,9 +29,13 @@ async function deployContract() {
     const movieNamesArray = movies.map((obj) => obj.title);
     
     // Connect to Ethereum network
-    const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
+    // const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
+    // Load Infura project ID from config
+    //const provider = new ethers.JsonRpcProvider(`https://sepolia.infura.io/v3/${config.apiKey}`);
     
     // Get signer (account) from provider
+    // Prompt user to connect their MetaMask wallet
+    const provider = await getProvider();
     const signer = await provider.getSigner();
     // Load contract factory
     const contractFactory = new ethers.ContractFactory(
@@ -73,7 +86,7 @@ export async function getContract() {
     await deployContract();
   }
   if (deployedContract === null && address !== null){
-    const provider = new ethers.JsonRpcProvider("http://localhost:8545"); // Example URL for a local node
+    const provider = await getProvider();
     return new ethers.Contract(address, contractArtifact.abi, provider);
   }
 
