@@ -1,0 +1,53 @@
+/* src/pages/MovieDetail.css */
+
+.movie-detail-container {
+    display: flex;
+  }
+  
+  .movie-detail-image {
+    flex: 1;
+  }
+  
+  .movie-detail-image img {
+    width: 100%;
+  }
+  
+  .movie-detail-info {
+    flex: 2;
+    padding: 0 20px;
+  }
+  
+  .rating-ring {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+  
+  .rating-ring svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .rating-ring circle {
+    fill: none;
+    stroke-width: 8;
+  }
+  
+  .rating-ring circle:last-child {
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dasharray 0.5s ease-out;
+  }
+  
+  .rating {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  

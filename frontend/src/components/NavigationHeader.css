@@ -1,0 +1,47 @@
+/* NavigationHeader.css */
+.navigation-header {
+    background-color: #3498db; /* Blue background color */
+    padding: 10px;
+    font-size: 24px;
+  }
+  
+  .navigation-header nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navigation-header nav ul li {
+    display: inline;
+    margin-right: 10px;
+  }
+  
+  .navigation-header nav ul li a {
+    color: #fff; /* White text color */
+    text-decoration: none;
+  }
+  
+  .navigation-header nav ul li a:hover {
+    text-decoration: underline;
+  }
+  
+  .align{
+    display: flex;
+    direction: row;
+  }
+
+  .right{
+    margin-left: auto; 
+    margin-right: 0;
+  }
+
+  li {
+    margin-left: 10px
+  }
+
+  .green {
+    color: green;
+  }
+  .red {
+    color: red;
+  }
