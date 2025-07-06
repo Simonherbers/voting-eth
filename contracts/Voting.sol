@@ -1,28 +1,42 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Voting {
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-    // Movie structure to hold movie details
-    struct Movie {
-        uint256 id;
-        string name;
-        uint256 voteCount;
-    }
-
-    Movie[] public movies; // Array contains all movies
-    mapping(address => bool) public hasVoted; // Mapping to track if an address has voted
-    uint256 salt = 25; // Salt for generating random numbers
+// ERC 20 permit
+contract Voting is ERC721 {
+    // Mapping from tokenId (NFT) to movie name
+    mapping(uint256 => string) public movieNames;
+    // Mapping from tokenId (NFT) to vote count
+    mapping(uint256 => uint256) public voteCounts;
+    // Mapping to track if an address has voted
+    mapping(address => bool) public hasVoted;
+    // Salt for generating random numbers (not secure, for demo only)
+    uint256 salt = 25;
+    // Counter for NFT tokenIds
+    uint256 public nextTokenId;
 
     // Event to emit when a vote is cast
     event Voted(uint256 movieId);
 
     // Constructor
-    constructor(string[] memory _movieNames) {
-        // Add all movie names to the array
+    constructor(string[] memory _movieNames) ERC721("VotingNFT", "VOTE") {
         for (uint256 i = 0; i < _movieNames.length; i++) {
-            movies.push(Movie(i, _movieNames[i], generateRandomNumber())); // remove random number in production
+            uint256 tokenId = nextTokenId;
+            _mint(address(this), tokenId);
+            movieNames[tokenId] = _movieNames[i];
+            voteCounts[tokenId] = generateRandomNumber(); // remove random number in production
+            nextTokenId++;
         }
+    }
+
+    // Function to add a new movie
+    function addMovie(string memory _name) external {
+        uint256 tokenId = nextTokenId;
+        _mint(address(this), tokenId);
+        movieNames[tokenId] = _name;
+        voteCounts[tokenId] = generateRandomNumber(); // remove random number in production
+        nextTokenId++;
     }
 
     // Function to generate a random number based on the salt
@@ -33,20 +47,23 @@ contract Voting {
         return salt;
     }
 
-    // Vote for a movie by its ID
+    // Vote for a movie by its NFT ID
     function vote(uint256 _movieId) external {
         require(!hasVoted[msg.sender], "Already voted");
-        require(_movieId < movies.length, "Invalid movie ID");
-
-        movies[_movieId].voteCount++;
+        require(ownerOf(_movieId) == address(this), "Invalid movie ID");
+        voteCounts[_movieId]++;
         hasVoted[msg.sender] = true;
 
         emit Voted(_movieId);
     }
 
-    // Returns the amount of movies in the array
+    /**
+     * @notice Returns the total number of movies available.
+     * @dev This function provides the current number of NFTs minted.
+     * @return The number of movies stored in the contract.
+     */
     function getMoviesCount() external view returns (uint256) {
-        return movies.length;
+        return nextTokenId;
     }
 
     // Returns movie names and their vote counts as tuples
@@ -55,39 +72,39 @@ contract Voting {
         view
         returns (string[] memory, uint256[] memory)
     {
-        string[] memory movieNames = new string[](movies.length);
-        uint256[] memory voteCounts = new uint256[](movies.length);
-        for (uint256 i = 0; i < movies.length; i++) {
-            movieNames[i] = movies[i].name;
-            voteCounts[i] = movies[i].voteCount;
+        string[] memory names = new string[](nextTokenId);
+        uint256[] memory votes = new uint256[](nextTokenId);
+        for (uint256 i = 0; i < nextTokenId; i++) {
+            names[i] = movieNames[i];
+            votes[i] = voteCounts[i];
         }
-        return (movieNames, voteCounts);
+        return (names, votes);
     }
 
-    // Returns the votes for a specific movie by its ID
+    // Returns the votes for a specific movie by its NFT ID
     function getVotesByMovieId(uint256 _id) external view returns (uint256) {
-        return movies[_id].voteCount;
+        require(_id < nextTokenId, "Invalid movie ID");
+        return voteCounts[_id];
     }
 
     // Returns the movie ID by its name
     function getMovieIdByName(
         string memory _movieName
     ) external view returns (uint256) {
-        for (uint256 i = 0; i < movies.length; i++) {
+        for (uint256 i = 0; i < nextTokenId; i++) {
             // Compare lengths first
-            if (bytes(movies[i].name).length != bytes(_movieName).length) {
+            if (bytes(movieNames[i]).length != bytes(_movieName).length) {
                 continue;
             }
-
             // Compare contents character by character
             bool equal = true;
             for (uint a = 0; a < bytes(_movieName).length; a++) {
-                if (bytes(movies[i].name)[a] != bytes(_movieName)[a]) {
+                if (bytes(movieNames[i])[a] != bytes(_movieName)[a]) {
                     equal = false;
                     break;
                 }
             }
-            if (equal) return movies[i].id;
+            if (equal) return i;
         }
         revert("Id not found");
     }
