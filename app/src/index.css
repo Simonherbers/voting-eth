@@ -84,13 +84,17 @@
 
   .search {
     @apply w-full bg-light-100/5 px-4 py-3 rounded-lg mt-10 max-w-3xl mx-auto;
+    display: flex;
+    flex-direction: row;
 
     & div {
       @apply relative flex items-center;
     }
 
     & img {
-      @apply absolute left-2 h-5 w-5;
+      height: 20px;
+      width: 20px;
+      margin: 10px -20px 0px 10px;
     }
 
     & input {
@@ -105,46 +109,54 @@
       @apply grid grid-cols-1 gap-5 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
     }
   }
-
   .movie-card {
-    @apply bg-dark-100 p-5 rounded-2xl shadow-inner shadow-light-100/10;
+    @apply bg-dark-100 p-5 rounded-2xl shadow-inner shadow-light-100/10 transition-transform duration-200 cursor-pointer flex flex-row items-start gap-5;
+
+    &:hover {
+    @apply scale-105 shadow-lg shadow-light-100/20;
+    }
 
     & img {
-      @apply rounded-lg h-auto w-full;
+    @apply rounded-lg h-auto w-[100px] flex-shrink-0;
+    }
+
+    & .details {
+    @apply flex-1 flex flex-col;
     }
 
     & h3 {
-      @apply text-white font-bold text-base line-clamp-1;
+    @apply text-white font-bold text-base line-clamp-1;
     }
 
     & .content {
-      @apply mt-2 flex flex-row items-center flex-wrap gap-2;
+    @apply mt-2 flex flex-row items-center flex-wrap gap-2;
     }
 
     & .rating {
-      @apply flex flex-row items-center gap-1;
+    @apply flex flex-row items-center gap-1;
     }
 
     & .rating img {
-      @apply size-4 object-contain;
+    @apply size-4 object-contain;
     }
 
     & .rating p {
-      @apply font-bold text-base text-white;
+    @apply font-bold text-base text-white;
     }
 
     & .content span {
-      @apply text-sm text-gray-100;
+    @apply text-sm text-gray-100;
     }
 
     & .content .lang {
-      @apply capitalize text-gray-100 font-medium text-base;
+    @apply capitalize text-gray-100 font-medium text-base;
     }
 
     & .content .year {
-      @apply text-gray-100 font-medium text-base;
+    @apply text-gray-100 font-medium text-base;
     }
   }
+
 
     .login {
       @apply sticky top-5 right-5 float-right z-50 bg-primary text-white font-bold py-2 px-6 rounded-full shadow-lg transition-colors duration-200 hover:bg-light-100/20 w-12 h-12 flex items-center justify-center;
