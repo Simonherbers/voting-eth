@@ -1,6 +1,5 @@
 import { ethers } from "ethers";
 import contractArtifact from "../../../artifacts/contracts/Voting.sol/Voting.json";
-import { useFirstMountState } from "react-use";
 
 //let deployedContract = null;
 //let owner = null;
@@ -20,14 +19,14 @@ async function getProvider() {
     return new ethers.BrowserProvider(window.ethereum, CHAIN);
 }
 
-async function deployContract() {
+async function deployContract(movieList) {
     try {
         if (localStorage.getItem(STORAGE_ADDRESS) !== "") {
             return;
         }
         // Split movie names input into an array
-        const movies = await fetchMovies();
-        const movieNamesArray = movies.map((obj) => obj.title);
+        // const movies = await fetchMovies();
+        const movieNamesArray = movieList.map((obj) => obj.title);
 
         // Prompt user to connect their MetaMask wallet
         const provider = await getProvider();
@@ -66,9 +65,9 @@ async function deployContract() {
     }
 }
 
-export async function reDeploy() {
+export async function reDeploy(movieList) {
     localStorage.setItem(STORAGE_ADDRESS, "");
-    await deployContract();
+    await deployContract(movieList);
 }
 
 export async function connectMetamask(){

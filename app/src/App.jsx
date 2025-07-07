@@ -6,6 +6,7 @@ import MovieCard from "./components/MovieCard.jsx";
 import Login from "./components/Login.jsx";
 import MovieDetail from "./components/MovieDetail.jsx";
 import { useDebounce } from "react-use";
+import { reDeploy } from "./utility/contractHelper.jsx";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -58,13 +59,31 @@ const App = () => {
     }
   };
 
+  const ArrowIcon = () => (
+    <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
+      <path
+        d="M8 5l8 7-8 7"
+        stroke="#bbb"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+
   useEffect(() => {
     fetchMovies(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
   return (
     <main>
       <div className="pattern" />
-      <nav className="login"><Login /></nav>
+      <nav className="login">
+        <Login />
+        <button onClick={() => reDeploy(movieList)} className="reDeploy">
+          <ArrowIcon />
+        </button>
+      </nav>
+
       <div className="wrapper">
         <Routes>
           <Route

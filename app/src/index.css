@@ -49,6 +49,9 @@
 
   nav {
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
   }
 }
@@ -157,18 +160,21 @@
     }
   }
 
+    .reDeploy{
+      background: 'none';
+      border: 'none';
+      cursor: 'pointer';
+      padding: 0;
+    }
 
     .login {
-      @apply sticky top-5 right-5 float-right z-50 bg-primary text-white font-bold py-2 px-6 rounded-full shadow-lg transition-colors duration-200 hover:bg-light-100/20 w-12 h-12 flex items-center justify-center;
-  
-      & button {
-        background: 'none';
-        border: 'none';
-        cursor: 'pointer';
-        padding: 0;
-      }
-
+      @apply sticky top-5 right-5 z-50 flex gap-3 justify-end items-center px-4;
     }
+
+    .login button {
+      @apply bg-primary text-white font-bold py-2 px-4 rounded-full shadow-lg transition-colors duration-200 hover:bg-light-100/20;
+    }
+
     .popup {
       position: absolute;
       top: 2.5rem;
