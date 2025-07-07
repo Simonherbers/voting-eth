@@ -10,6 +10,8 @@ const STORAGE_ADDRESS = "address";
 const ACCOUNT = "account";
 const CHAIN = "sepolia"; // Change to your desired chain
 
+
+
 async function getProvider() {
     if (!window.ethereum) {
         throw new Error("MetaMask is not installed");
@@ -110,3 +112,31 @@ export function listenForAccountChanges(callback) {
         };
     }
 }
+
+
+export async function voteForMovie(movie_id){
+  if (!window.ethereum) {
+    alert("Please install MetaMask to vote.");
+    return;
+  }
+
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const address = localStorage.getItem(STORAGE_ADDRESS);
+    if (!address) {
+      alert("No contract deployed. Please deploy the contract first.");
+      return;
+    }
+    const contract = new ethers.Contract(address, contractArtifact.abi, signer);
+
+    const tx = await contract.vote(movie_id); // movie.id comes from useParams fetch
+    await tx.wait();
+
+    alert("Vote submitted successfully!");
+  } catch (err) {
+    console.error("Error voting:", err);
+    alert("Failed to vote. Check console for details.");
+  }
+};

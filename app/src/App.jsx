@@ -1,8 +1,10 @@
 import { React, use, useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
 import MovieCard from "./components/MovieCard.jsx";
 import Login from "./components/Login.jsx";
+import MovieDetail from "./components/MovieDetail.jsx";
 import { useDebounce } from "react-use";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -62,34 +64,45 @@ const App = () => {
   return (
     <main>
       <div className="pattern" />
-
-      <nav className="login"><Login></Login></nav>
-      
+      <nav className="login"><Login /></nav>
       <div className="wrapper">
-        <header>
-          <img src="./hero.png" alt="Hero Banner" />
-          <h1>
-            Find <span className="text-gradient">Movies</span> You'll Enjoy
-            Without The Hassle
-          </h1>
-          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-        </header>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div>
+                <header>
+                  <img src="./hero.png" alt="Hero Banner" />
+                  <h1>
+                    Find <span className="text-gradient">Movies</span> You'll
+                    Enjoy Without The Hassle
+                  </h1>
+                  <Search
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                  />
+                </header>
 
-        <section className="all-movies">
-          <h2 className="mt-[40px]">All Movies</h2>
+                <section className="all-movies">
+                  <h2 className="mt-[40px]">All Movies</h2>
+                  {isLoading ? (
+                    <Spinner />
+                  ) : errorMessage ? (
+                    <p className="text-red-500">{errorMessage}</p>
+                  ) : (
+                    <ul>
+                      {movieList.map((movie) => (
+                        <MovieCard key={movie.id} movie={movie} />
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              </div>
+            }
+          />
 
-          {isLoading ? (
-            <Spinner />
-          ) : errorMessage ? (
-            <p className="text-red-500">{errorMessage}</p>
-          ) : (
-            <ul>
-              {movieList.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} />
-              ))}
-            </ul>
-          )}
-        </section>
+          <Route path="/movie/:id" element={<MovieDetail />} />
+        </Routes>
       </div>
     </main>
   );
