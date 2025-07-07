@@ -92,22 +92,15 @@ export async function getContract() {
 
   return deployedContract;
 }
-/*
-export async function getOwner() {
-  let deployed = localStorage.getItem("address");
-  if (deployed === null) {
-    await deployContract();
+
+export async function login(){
+  if (window.ethereum) {
+      try {
+          return await window.ethereum.request({ method: 'eth_requestAccounts' });
+      } catch (err) {
+          // User rejected or error
+      }
+  } else {
+      window.open('https://metamask.io/download/', '_blank');
   }
-
-  return owner!;
 }
-
-export async function getOtherAccount() {
-  let deployed = localStorage.getItem("address");
-  if (deployed === null) {
-    await deployContract();
-  }
-
-  return otherAccount!;
-}
-*/
