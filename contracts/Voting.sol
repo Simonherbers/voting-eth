@@ -11,6 +11,10 @@ contract Voting is ERC721 {
 
     // Mapping from movie id to movie name
     mapping(uint256 => string) public movieNames;
+    // Mapping from counter to movie id -> helper for iterating through movies
+    mapping(uint256 => uint256) public movieIds;
+    // Counter for movie ids
+    uint256 public movieIdCounter;
     // Mapping from movie id to vote count
     mapping(uint256 => uint256) public voteCounts;
     // Mapping from NFT tokenId to movie id
@@ -30,6 +34,7 @@ contract Voting is ERC721 {
         require(initialMovieIds.length == initialMovieTitles.length, "Mismatched input lengths");
 
         nextTokenId = 0;
+        movieIdCounter = 0;
 
         for (uint i = 0; i < initialMovieIds.length; i++) {
             _addMovie(initialMovieIds[i], initialMovieTitles[i]);
@@ -42,6 +47,8 @@ contract Voting is ERC721 {
     function _addMovie(uint256 _movie_id, string memory _name) internal {
         movieNames[_movie_id] = _name;
         voteCounts[_movie_id] = 0;
+        movieIds[movieIdCounter] = _movie_id;
+        movieIdCounter++;
     }
 
     // --- External Functions ---
@@ -53,6 +60,8 @@ contract Voting is ERC721 {
 
     function vote(uint256 _movieId) external {
         require(!hasVoted[msg.sender], "Already voted");
+        require(bytes(movieNames[_movieId]).length > 0, "Movie does not exist");
+
         voteCounts[_movieId]++;
         hasVoted[msg.sender] = true;
 
@@ -76,12 +85,12 @@ contract Voting is ERC721 {
     }
 
     function getTop5Movies() public view returns (uint256[5] memory topMovieIds) {
-        uint256 len = nextTokenId;
+        uint256 len = movieIdCounter;
         uint256[5] memory topVotes;
         uint256[5] memory topIds;
 
         for (uint256 i = 0; i < len; i++) {
-            uint256 id = nftIdsToMovieIds[i];
+            uint256 id = movieIds[i];
             uint256 v = voteCounts[id];
 
             for (uint256 j = 0; j < 5; j++) {

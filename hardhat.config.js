@@ -1,4 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-chai-matchers");
+
 
 // Ensure your configuration variables are set before executing the script
 const { vars } = require("hardhat/config");
