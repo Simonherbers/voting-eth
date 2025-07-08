@@ -6,7 +6,7 @@ import MovieCard from "./components/MovieCard.jsx";
 import Login from "./components/Login.jsx";
 import MovieDetail from "./components/MovieDetail.jsx";
 import { useDebounce } from "react-use";
-import { reDeploy } from "./utility/contractHelper.jsx";
+import { getTop5Movies, reDeploy } from "./utility/contractHelper.jsx";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -63,10 +63,23 @@ const App = () => {
   const loadTrendingMovies = async () => {
     try {
       // const movies = await getTrendingMovies();
-      const movies = movieList.filter((movie) => movie.vote_average > 7).slice(0, 10);
-      console.log("Trending Movies:", movies);
+      const top5 = await getTop5Movies();
 
-      setTrendingMovies(movies);
+      if (!top5 || top5.length === 0) {
+        setTrendingMovies(movieList.slice(0, 5));
+        return;
+      }
+
+      const movieDetails = await Promise.all(
+        top5.map(async (result) => {
+          const res = await fetch(`${API_BASE_URL}/movie/${result.id}`, API_OPTIONS);
+          if (!res.ok) throw new Error("Failed to fetch movie details");
+          let movie = res.json();
+          movie.votes = result.votes;
+          return movie;
+        })
+      );
+      setTrendingMovies(movieDetails);
     } catch (error) {
       console.error(`Error fetching trending movies: ${error}`);
     }
@@ -126,13 +139,14 @@ const App = () => {
 
                     <ul>
                       {trendingMovies.map((movie, index) => (
-                        <li key={movie.$id}>
+                        <li key={movie.id}>
                           <p>{index + 1}</p>
                           <img src={
                             movie.poster_path
                               ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
                               : "no-movie.png"
                           } alt={movie.title} />
+                          <span>{movie.votes}</span>
                         </li>
                       ))}
                     </ul>

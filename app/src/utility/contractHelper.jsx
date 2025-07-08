@@ -1,36 +1,44 @@
 import { ethers } from "ethers";
 import contractArtifact from "../../../artifacts/contracts/Voting.sol/Voting.json";
 
-//let deployedContract = null;
-//let owner = null;
-//let otherAccount = null;
-
-const STORAGE_ADDRESS = "address";
+const CONTRACT_ADDRESS = "address";
 const ACCOUNT = "account";
-const CHAIN = "sepolia"; // Change to your desired chain
+const CHAIN = "sepolia";
 
 
-
-async function getProvider() {
+export async function getProvider() {
     if (!window.ethereum) {
         throw new Error("MetaMask is not installed");
     }
-    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const account = localStorage.getItem(ACCOUNT);
+    if (!account) {
+        throw new Error("No account found in local storage. Please connect your MetaMask wallet.");
+    }
     return new ethers.BrowserProvider(window.ethereum, CHAIN);
 }
 
-async function deployContract(movieList) {
+export async function getSigner() {
+    const provider = await getProvider();
+    return await provider.getSigner();
+}
+
+export async function getContract() {
+    const signer = await getSigner();
+    const address = localStorage.getItem(CONTRACT_ADDRESS);
+    if (!address) throw new Error("Contract not deployed or address missing.");
+    return new ethers.Contract(address, contractArtifact.abi, signer);
+}
+
+async function deployContract(ids, titles) {
     try {
-        if (localStorage.getItem(STORAGE_ADDRESS) !== "") {
+        const existingAddress = localStorage.getItem(CONTRACT_ADDRESS);
+        if (existingAddress && existingAddress !== "undefined") {
+            console.log("Contract already deployed at:", existingAddress);
             return;
         }
-        // Split movie names input into an array
-        // const movies = await fetchMovies();
-        const movieNamesArray = movieList.map((obj) => obj.title);
 
         // Prompt user to connect their MetaMask wallet
-        const provider = await getProvider();
-        const signer = await provider.getSigner();
+        const signer = await getSigner();
 
         // Load contract factory
         const contractFactory = new ethers.ContractFactory(
@@ -40,54 +48,50 @@ async function deployContract(movieList) {
         );
 
         // Deploy contract
-        let contract = await contractFactory.deploy(movieNamesArray);
+        let contract = await contractFactory.deploy(ids, titles);
 
         // Wait for deployment transaction to be mined
         await contract.waitForDeployment();
 
         // Set deployed contract address
         const address = await contract.getAddress();
-        localStorage.setItem(STORAGE_ADDRESS, address);
+        localStorage.setItem(CONTRACT_ADDRESS, address);
         console.log("contractAddress: " + address);
 
-        /*
-        [owner, otherAccount] = await ethers.getSigners();
-        const MovieVoting = await ethers.getContractFactory("MovieVoting");
-        contract = await MovieVoting.deploy(["Movie 1", "Movie 2", "Movie 3"]);
-        await contract.waitForDeployment();
-        localStorage.setItem("address", contract.getAddress());
-        */
-        //localStorage.setItem("owner", owner);
-        //localStorage.setItem("otherAccount", otherAccount);
-        //return {contract, owner, otherAccount};
     } catch (error) {
         console.error("Error deploying contract:", error);
     }
 }
 
 export async function reDeploy(movieList) {
-    localStorage.setItem(STORAGE_ADDRESS, "");
-    await deployContract(movieList);
+    localStorage.removeItem(CONTRACT_ADDRESS);
+    const ids = movieList.map((obj) => obj.id);
+    const titles = movieList.map((obj) => obj.title);
+    await deployContract(ids, titles);
 }
 
 export async function connectMetamask(){
-  if (window.ethereum) {
-      try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const first_account = accounts[0]; // Always return the first account
-          localStorage.setItem(ACCOUNT, first_account);
-          return first_account;
-      } catch (err) {
-          localStorage.setItem(ACCOUNT, null);
-          throw new Error("User rejected the request or an error occurred while connecting to MetaMask.\n" + err.message);
-      }
-  } else {
+  if (!window.ethereum) {
       window.open('https://metamask.io/download/', '_blank');
+      return;
+  }
+  try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const first_account = accounts?.[0] ?? null;
+      if (first_account) {
+          localStorage.setItem(ACCOUNT, first_account);
+      } else {
+          localStorage.removeItem(ACCOUNT);
+      }
+      return first_account;
+  } catch (err) {
+      localStorage.removeItem(ACCOUNT);
+      throw new Error("User rejected the request or an error occurred while connecting to MetaMask.\n" + err.message);
   }
 }
 
 export function disconnectMetamask(){
-    localStorage.setItem(ACCOUNT, null);
+    localStorage.removeItem(ACCOUNT);
 }
 
 export function listenForAccountChanges(callback) {
@@ -98,7 +102,7 @@ export function listenForAccountChanges(callback) {
                 localStorage.setItem(ACCOUNT, account);
                 callback(account);
             } else {
-                localStorage.setItem(ACCOUNT, null);
+                localStorage.removeItem(ACCOUNT);
                 callback(null);
             }
         };
@@ -113,29 +117,123 @@ export function listenForAccountChanges(callback) {
 }
 
 
-export async function voteForMovie(movie_id){
+export async function voteForMovie(movie_id, movie_title){
   if (!window.ethereum) {
     alert("Please install MetaMask to vote.");
     return;
   }
 
   try {
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-
-    const address = localStorage.getItem(STORAGE_ADDRESS);
+    const address = localStorage.getItem(CONTRACT_ADDRESS);
     if (!address) {
       alert("No contract deployed. Please deploy the contract first.");
       return;
     }
-    const contract = new ethers.Contract(address, contractArtifact.abi, signer);
+    const contract = await getContract();
 
-    const tx = await contract.vote(movie_id); // movie.id comes from useParams fetch
+    const title = await contract.getMovieById(movie_id)
+    if (title === "") {
+        await contract.addMovie(movie_id, movie_title);
+        console.log(`Movie with ID ${movie_id} and Title '${movie_title}' added successfully.`);
+    }
+
+    const tx = await contract.vote(movie_id);
     await tx.wait();
 
+    console.log(`Vote for movie ID ${movie_id} submitted successfully.`);
     alert("Vote submitted successfully!");
   } catch (err) {
     console.error("Error voting:", err);
     alert("Failed to vote. Check console for details.");
   }
 };
+
+
+export async function getTop5Movies() {
+    const contract = await getContract();
+    const topMovies = await contract.getTop5Movies();
+    const voting = await Promise.all(
+        topMovies.map(async (movieId) => {
+            const voteCount = await contract.getVoteCountByMovieId(movieId);
+            return { id: movieId, votes: voteCount };
+        })
+    );
+    return voting;
+}
+
+// async function signAddMovie(signer, movieId, movieName, nonce) {
+//     const domain = {
+//         name: "VotingNFT",
+//         version: "1",
+//         chainId: 11155111, // Sepolia testnet chain ID
+//         verifyingContract: localStorage.getItem(CONTRACT_ADDRESS),
+//     };
+// 
+//     const types = {
+//         AddMovie: [
+//         { name: "movie_id", type: "uint256" },
+//         { name: "name", type: "string" },
+//         { name: "nonce", type: "uint256" },
+//         { name: "user", type: "address" },
+//         ],
+//     };
+// 
+//   const userAddress = await signer.getAddress();
+// 
+//   const value = {
+//     movie_id: movieId,
+//     name: movieName,
+//     nonce: nonce,
+//     user: userAddress,
+//   };
+// 
+//   const signature = await signer._signTypedData(domain, types, value);
+//   return { signature, userAddress };
+// }
+// 
+// async function relayAddMovie(
+//   relayerSigner,  // Backend wallet (ethers.Wallet)
+//   contract,       // ethers.Contract instance of Voting
+//   movieId,
+//   movieName,
+//   userAddress,
+//   nonce,
+//   signature
+// ) {
+//   const tx = await contract.connect(relayerSigner).relayAddMovie(
+//     movieId,
+//     movieName,
+//     userAddress,
+//     nonce,
+//     signature,
+//     {
+//       gasLimit: 300000, // adjust as needed
+//     }
+//   );
+//   await tx.wait();
+//   console.log(`Transaction sent: ${tx.hash}`);
+// }
+// 
+// export async function addMovie(movieId, movieName) {
+//     const provider = await getProvider();
+// 
+//     // Frontend user (MetaMask)
+//     const userSigner = new ethers.providers.Web3Provider(window.ethereum).getSigner();
+// 
+//     // Backend relayer wallet
+//     const relayer = new ethers.Wallet("RELAYER_PRIVATE_KEY", provider);
+// 
+//     const contractAddress = localStorage.getItem(CONTRACT_ADDRESS);
+//     const contract = new ethers.Contract(contractAddress, contractArtifact.abi, provider);
+// 
+//     // 1. Get nonce
+//     const userAddress = await userSigner.getAddress();
+//     const nonce = await contract.nonces(userAddress);
+// 
+//     // 2. User signs
+//     const { signature } = await signAddMovie(userSigner, movieId, movieName, nonce);
+// 
+//     // 3. Relayer sends tx
+//     await relayAddMovie(relayer, contract, movieId, movieName, userAddress, nonce, signature);
+// 
+// }
