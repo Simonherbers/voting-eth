@@ -120,8 +120,6 @@ contract Voting is ERC721 {
     function getMovieVotedFor(address voter) public view returns (string memory) {
         require(hasVoted[voter], "Address has not voted yet");
         uint256 tokenId = addressToMovieId[voter];
-        require(tokenId < nextTokenId, "Invalid token ID");
-        require(nftIdsToMovieIds[tokenId] != 0, "No movie associated with this token ID");
         uint256 movieId = nftIdsToMovieIds[tokenId];
         return movieNames[movieId];    
     }

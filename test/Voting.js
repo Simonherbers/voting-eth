@@ -5,111 +5,121 @@ const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helper
 
 describe("Voting", function () {
     async function deployContract() {
-    const [owner, otherAccount, thirdAccount] = await ethers.getSigners();
-    const Voting = await ethers.getContractFactory("Voting");
+        const [owner, otherAccount, thirdAccount] = await ethers.getSigners();
+        const Voting = await ethers.getContractFactory("Voting");
 
-    // Use 3 movie IDs for setup
-    const contract = await Voting.deploy(
-        [1, 2, 3],
-        ["Movie 1", "Movie 2", "Movie 3"]
-    );
-    await contract.waitForDeployment();
+        // Use 3 movie IDs for setup
+        const contract = await Voting.deploy(
+            [1, 2, 3],
+            ["Movie 1", "Movie 2", "Movie 3"]
+        );
+        await contract.waitForDeployment();
 
-    return { contract, owner, otherAccount, thirdAccount };
+        return { contract, owner, otherAccount, thirdAccount };
     }
 
+    it("should fail if movies and ids arrays are not the same length", async function () {
+        const Voting = await ethers.getContractFactory("Voting");
+        // Use 3 movie IDs for setup
+        expect(Voting.deploy(
+            [1],
+            ["Movie 1", "Movie 2", "Movie 3"]
+        )).to.be.revertedWith("Mismatched input lengths");
+    });
+
+
     it("should initialize with correct movie data", async function () {
-    const { contract } = await loadFixture(deployContract);
-    expect(await contract.getMovieById(1)).to.equal("Movie 1");
-    expect(await contract.getVoteCountByMovieId(1)).to.equal(0);
+        const { contract } = await loadFixture(deployContract);
+        expect(await contract.getMovieById(1)).to.equal("Movie 1");
+        expect(await contract.getVoteCountByMovieId(1)).to.equal(0);
     });
 
     it("should allow a user to vote and mint NFT", async function () {
-    const { contract, owner } = await loadFixture(deployContract);
+        const { contract, owner } = await loadFixture(deployContract);
 
-    await contract.vote(1);
-    expect(await contract.hasVoted(owner.address)).to.equal(true);
+        await contract.vote(1);
+        expect(await contract.hasVoted(owner.address)).to.equal(true);
 
-    const votedMovie = await contract.getMovieVotedFor(owner.address);
-    expect(votedMovie).to.equal("Movie 1");
+        const votedMovie = await contract.getMovieVotedFor(owner.address);
+        expect(votedMovie).to.equal("Movie 1");
 
-    const balance = await contract.balanceOf(owner.address);
-    expect(balance).to.equal(1);
+        const balance = await contract.balanceOf(owner.address);
+        expect(balance).to.equal(1);
     });
 
     it("should revert if a user votes twice", async function () {
-    const { contract } = await loadFixture(deployContract);
+        const { contract } = await loadFixture(deployContract);
 
-    await contract.vote(1);
-    await expect(contract.vote(1)).to.be.revertedWith("Already voted");
+        await contract.vote(1);
+        await expect(contract.vote(1)).to.be.revertedWith("Already voted");
     });
 
     it("should revert on getMovieVotedFor if user hasn't voted", async function () {
-    const { contract, otherAccount } = await loadFixture(deployContract);
+        const { contract, otherAccount } = await loadFixture(deployContract);
 
-    await expect(
-        contract.getMovieVotedFor(otherAccount.address)
-    ).to.be.revertedWith("Address has not voted yet");
+        await expect(
+            contract.getMovieVotedFor(otherAccount.address)
+        ).to.be.revertedWith("Address has not voted yet");
     });
 
     it("should revert if voting for an invalid movie", async function () {
-    const { contract } = await loadFixture(deployContract);
+        const { contract } = await loadFixture(deployContract);
 
-    // There is no movie ID 99 in the list
-    await expect(contract.vote(0)).to.be.revertedWith("Movie does not exist");
+        // There is no movie ID 99 in the list
+        await expect(contract.vote(0)).to.be.revertedWith("Movie does not exist");
     });
 
     it("should return correct top 5 movies", async function () {
-    const { contract, owner, otherAccount, thirdAccount } = await loadFixture(
-        deployContract
-    );
+        const { contract, owner, otherAccount, thirdAccount } = await loadFixture(
+            deployContract
+        );
 
-    await contract.vote(1);
-    await contract.connect(otherAccount).vote(2);
-    await contract.connect(thirdAccount).vote(2);
+        await contract.vote(1);
+        await contract.connect(otherAccount).vote(2);
+        await contract.connect(thirdAccount).vote(2);
 
-    const top5 = await contract.getTop5Movies();
-    expect(top5[0]).to.equal(2);
-    expect(top5[1]).to.equal(1);
+        const top5 = await contract.getTop5Movies();
+        expect(top5[0]).to.equal(2);
+        expect(top5[1]).to.equal(1);
     });
 
     it("should add a new movie and get correct name", async function () {
-    const { contract } = await loadFixture(deployContract);
-    await contract.addMovie(99, "Movie X");
-    expect(await contract.getMovieById(99)).to.equal("Movie X");
+        const { contract } = await loadFixture(deployContract);
+        await contract.addMovie(99, "Movie X");
+        expect(await contract.getMovieById(99)).to.equal("Movie X");
     });
 
     it("should return empty string for unknown movie ID", async function () {
-    const { contract } = await loadFixture(deployContract);
-    expect(await contract.getMovieById(123456)).to.equal("");
+        const { contract } = await loadFixture(deployContract);
+        expect(await contract.getMovieById(123456)).to.equal("");
     });
 
     it("should track ownership of minted NFTs", async function () {
-    const { contract, owner } = await loadFixture(deployContract);
-    await contract.connect(owner).vote(2);
-    expect(await contract.ownerOf(0)).to.equal(owner.address);
+        const { contract, owner } = await loadFixture(deployContract);
+        await contract.connect(owner).vote(2);
+        expect(await contract.ownerOf(0)).to.equal(owner.address);
     });
 
     it("should revert getMovieVotedFor on invalid token ID mapping", async function () {
-    const { contract, owner } = await loadFixture(deployContract);
-    await contract.vote(2);
+        const { contract, owner } = await loadFixture(deployContract);
+        await contract.vote(2);
 
-    // Manually break the mapping for test
-    await contract.nftIdsToMovieIds(999); // should return 0
+        // Manually break the mapping for test
+        await contract.nftIdsToMovieIds(999); // should return 0
 
-    // simulate fallback if tokenId is unset or malformed
-    const tokenId = await contract.addressToMovieId(owner.address);
-    const movieId = await contract.nftIdsToMovieIds(tokenId);
-    expect(movieId).to.not.equal(0);
+        // simulate fallback if tokenId is unset or malformed
+        const tokenId = await contract.addressToMovieId(owner.address);
+        const movieId = await contract.nftIdsToMovieIds(tokenId);
+        expect(movieId).to.not.equal(0);
     });
 
     it("should allow vote count comparison between two methods", async function () {
-    const { contract } = await loadFixture(deployContract);
-    await contract.vote(1);
-    const count1 = await contract.getVoteCountByMovieId(1);
-    const count2 = (await contract.getTop5Movies())[0];
-    expect(count1).to.be.greaterThanOrEqual(1);
-    expect(typeof count2).to.equal("bigint");
+        const { contract } = await loadFixture(deployContract);
+        await contract.vote(1);
+        const count1 = await contract.getVoteCountByMovieId(1);
+        const count2 = (await contract.getTop5Movies())[0];
+        expect(count1).to.be.greaterThanOrEqual(1);
+        expect(typeof count2).to.equal("bigint");
     });
 
     it("should not allow adding a movie with an existing ID", async function () {

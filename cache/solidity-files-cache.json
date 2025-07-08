@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/workspaces/javascript-node/contracts/Voting.sol": {
-      "lastModificationDate": 1752013247679,
-      "contentHash": "0dd41ffbc431a5dfc1660da46e1cd1ff",
+      "lastModificationDate": 1752014211507,
+      "contentHash": "4e6ab8b0e6138b306d852b9d1031f2c0",
       "sourceName": "contracts/Voting.sol",
       "solcConfig": {
         "version": "0.8.28",
@@ -26,9 +26,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -69,9 +66,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -108,9 +102,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -151,9 +142,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -198,9 +186,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -239,9 +224,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -278,9 +260,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -320,9 +299,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -359,9 +335,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -398,9 +371,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -439,9 +409,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -480,9 +447,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -521,9 +485,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -562,9 +523,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -604,9 +562,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },
@@ -643,9 +598,6 @@
                 "ast"
               ]
             }
-          },
-          "metadata": {
-            "useLiteralContent": false
           }
         }
       },

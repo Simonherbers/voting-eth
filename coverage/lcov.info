@@ -10,7 +10,7 @@ FN:114,getVoteCountByMovieId
 FN:120,getMovieVotedFor
 FNF:8
 FNH:8
-FNDA:1,constructor
+FNDA:2,constructor
 FNDA:5,_addMovie
 FNDA:2,addMovie
 FNDA:18,vote
@@ -18,7 +18,7 @@ FNDA:4,getMovieById
 FNDA:4,getTop5Movies
 FNDA:2,getVoteCountByMovieId
 FNDA:3,getMovieVotedFor
-DA:34,1
+DA:34,2
 DA:36,1
 DA:37,1
 DA:39,1
@@ -61,12 +61,10 @@ DA:121,3
 DA:122,1
 DA:123,1
 DA:124,1
-DA:125,1
-DA:126,1
-LF:45
-LH:45
+LF:43
+LH:43
 BRDA:34,1,0,1
-BRDA:34,1,1,0
+BRDA:34,1,1,1
 BRDA:62,2,0,17
 BRDA:62,2,1,1
 BRDA:63,3,0,15
@@ -77,10 +75,6 @@ BRDA:97,5,0,12
 BRDA:97,5,1,6
 BRDA:121,6,0,1
 BRDA:121,6,1,2
-BRDA:123,7,0,1
-BRDA:123,7,1,0
-BRDA:124,8,0,1
-BRDA:124,8,1,0
-BRF:16
-BRH:13
+BRF:12
+BRH:12
 end_of_record
