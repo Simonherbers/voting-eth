@@ -26,6 +26,7 @@ const App = () => {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [trendingMovies, setTrendingMovies] = useState([]);
 
   // Debounce the search term to avoid too many API calls
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
@@ -59,6 +60,27 @@ const App = () => {
     }
   };
 
+  const loadTrendingMovies = async () => {
+    try {
+      // const movies = await getTrendingMovies();
+      const movies = movieList.filter((movie) => movie.vote_average > 7).slice(0, 10);
+      console.log("Trending Movies:", movies);
+
+      setTrendingMovies(movies);
+    } catch (error) {
+      console.error(`Error fetching trending movies: ${error}`);
+    }
+  }
+
+  useEffect(() => {
+    fetchMovies(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    loadTrendingMovies();
+  }, []);
+  
+  
   const ArrowIcon = () => (
     <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
       <path
@@ -70,10 +92,6 @@ const App = () => {
       />
     </svg>
   );
-
-  useEffect(() => {
-    fetchMovies(debouncedSearchTerm);
-  }, [debouncedSearchTerm]);
   return (
     <main>
       <div className="pattern" />
@@ -101,6 +119,25 @@ const App = () => {
                     setSearchTerm={setSearchTerm}
                   />
                 </header>
+
+                {trendingMovies.length > 0 && (
+                  <section className="trending">
+                    <h2>Most votes</h2>
+
+                    <ul>
+                      {trendingMovies.map((movie, index) => (
+                        <li key={movie.$id}>
+                          <p>{index + 1}</p>
+                          <img src={
+                            movie.poster_path
+                              ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
+                              : "no-movie.png"
+                          } alt={movie.title} />
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
 
                 <section className="all-movies">
                   <h2 className="mt-[40px]">All Movies</h2>
