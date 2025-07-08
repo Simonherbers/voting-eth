@@ -62,12 +62,37 @@ const App = () => {
 
   const loadTrendingMovies = async () => {
     try {
-      // const movies = await getTrendingMovies();
       const top5 = await getTop5Movies();
-
-      if (!top5 || top5.length === 0) {
-        setTrendingMovies(movieList.slice(0, 5));
+      
+      if (
+        !top5 ||
+        top5.length === 0
+      ) {
+        const response = await fetch(`${API_BASE_URL}/discover/movie?sort_by=popularity.desc`, API_OPTIONS);
+        if (!response.ok) {
+          throw new Error("Failed to fetch trending movies");
+        }
+        const data = await response.json();
+        const l = data.results || [];
+        setTrendingMovies(l.slice(0, 5));
         return;
+      }
+
+      if (top5.some((movie) => movie.id === 0n))
+{
+        const response = await fetch(`${API_BASE_URL}/discover/movie?sort_by=popularity.desc`, API_OPTIONS);
+        if (!response.ok) {
+          throw new Error("Failed to fetch trending movies");
+        }
+        const data = await response.json();
+        const l = data.results || [];
+        const random_index = Math.floor(Math.random() * (l.length-5));
+        for (let i = 0; i < top5.length; i++) {
+          if (top5[i].id === 0n) {
+            top5[i].id = l[random_index + i].id;
+            top5[i].votes = 0;
+          }
+        }
       }
 
       const movieDetails = await Promise.all(

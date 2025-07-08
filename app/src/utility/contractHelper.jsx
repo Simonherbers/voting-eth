@@ -172,80 +172,13 @@ export async function getVoteCountById(movieId) {
     }
 }
 
-
-// async function signAddMovie(signer, movieId, movieName, nonce) {
-//     const domain = {
-//         name: "VotingNFT",
-//         version: "1",
-//         chainId: 11155111, // Sepolia testnet chain ID
-//         verifyingContract: localStorage.getItem(CONTRACT_ADDRESS),
-//     };
-// 
-//     const types = {
-//         AddMovie: [
-//         { name: "movie_id", type: "uint256" },
-//         { name: "name", type: "string" },
-//         { name: "nonce", type: "uint256" },
-//         { name: "user", type: "address" },
-//         ],
-//     };
-// 
-//   const userAddress = await signer.getAddress();
-// 
-//   const value = {
-//     movie_id: movieId,
-//     name: movieName,
-//     nonce: nonce,
-//     user: userAddress,
-//   };
-// 
-//   const signature = await signer._signTypedData(domain, types, value);
-//   return { signature, userAddress };
-// }
-// 
-// async function relayAddMovie(
-//   relayerSigner,  // Backend wallet (ethers.Wallet)
-//   contract,       // ethers.Contract instance of Voting
-//   movieId,
-//   movieName,
-//   userAddress,
-//   nonce,
-//   signature
-// ) {
-//   const tx = await contract.connect(relayerSigner).relayAddMovie(
-//     movieId,
-//     movieName,
-//     userAddress,
-//     nonce,
-//     signature,
-//     {
-//       gasLimit: 300000, // adjust as needed
-//     }
-//   );
-//   await tx.wait();
-//   console.log(`Transaction sent: ${tx.hash}`);
-// }
-// 
-// export async function addMovie(movieId, movieName) {
-//     const provider = await getProvider();
-// 
-//     // Frontend user (MetaMask)
-//     const userSigner = new ethers.providers.Web3Provider(window.ethereum).getSigner();
-// 
-//     // Backend relayer wallet
-//     const relayer = new ethers.Wallet("RELAYER_PRIVATE_KEY", provider);
-// 
-//     const contractAddress = localStorage.getItem(CONTRACT_ADDRESS);
-//     const contract = new ethers.Contract(contractAddress, contractArtifact.abi, provider);
-// 
-//     // 1. Get nonce
-//     const userAddress = await userSigner.getAddress();
-//     const nonce = await contract.nonces(userAddress);
-// 
-//     // 2. User signs
-//     const { signature } = await signAddMovie(userSigner, movieId, movieName, nonce);
-// 
-//     // 3. Relayer sends tx
-//     await relayAddMovie(relayer, contract, movieId, movieName, userAddress, nonce, signature);
-// 
-// }
+export async function getMovieAccountVotedFor(account) {
+    try{
+        const contract = await getContract();
+        
+        return await contract.getMovieVotedFor(account);
+    } catch (error) {
+        console.error("Error fetching movie account voted for:", error);
+        return "";
+    }
+}

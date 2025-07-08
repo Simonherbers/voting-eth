@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MetamaskLogo from "../assets/metamask-logo.svg";
-import { connectMetamask, disconnectMetamask, listenForAccountChanges } from '../utility/contractHelper'; // Assuming you have a utility function to handle login
+import { connectMetamask, disconnectMetamask, getMovieAccountVotedFor, listenForAccountChanges } from '../utility/contractHelper'; // Assuming you have a utility function to handle login
 
 // Simple user icon
 const UserIcon = () => (
@@ -13,12 +13,19 @@ const UserIcon = () => (
 const Login = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [account, setAccount] = useState(null);
+    const [votedForMovie, setVotedForMovie] = useState("Not voted yet");
+
     useEffect(() => {
         // Listen for account changes and update state
         const unsubscribe = listenForAccountChanges((newAccount) => {
             setAccount(newAccount);
             if (newAccount) {
                 console.log("Connected account:", newAccount);
+                getMovieAccountVotedFor(account).then((title) => {
+                    if (title) {
+                        setVotedForMovie(title);
+                    }
+                });
                 setShowPopup(true);
                 alert(`Connected to account: ${newAccount.slice(0, 6)}...${newAccount.slice(-4)}`);
             } else {
@@ -35,6 +42,10 @@ const Login = () => {
         try {
             const account = await connectMetamask();
             setAccount(account);
+            const title = await getMovieAccountVotedFor(account);
+            if (title) {
+                setVotedForMovie(title);
+            }
             setShowPopup(false);
         } catch (err) {
             // User rejected or error
@@ -96,6 +107,8 @@ const Login = () => {
                                 }}
                             >
                                 <strong>Account:</strong> {account.slice(0, 6)}...{account.slice(-4)}
+                                <br />
+                                <strong>You Voted for:</strong> {votedForMovie}
                             </div>
                             <button
                                 onClick={handleLogout}

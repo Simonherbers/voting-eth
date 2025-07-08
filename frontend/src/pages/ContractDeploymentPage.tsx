@@ -15,7 +15,6 @@ const ConfigurationPage = () => {
   const fetchMovieVotes = async () => {
     try {
       const contract = (await getContract() as any);
-      //let count = await contract.getMoviesCount();
       const proxy = await contract.getAllVotes(); // Assuming getAllVotes returns (string[], uint256[])
       const movieNames = await proxy[0];
       const movieVoteCounts = await proxy[1];
