@@ -161,6 +161,18 @@ export async function getTop5Movies() {
     return voting;
 }
 
+export async function getVoteCountById(movieId) {
+    try{
+        const contract = await getContract();
+        const voteCount = await contract.getVoteCountByMovieId(movieId);
+        return voteCount;
+    } catch (error) {
+        console.error("Error fetching vote count:", error);
+        throw new Error("Failed to fetch vote count. Please try again later.");
+    }
+}
+
+
 // async function signAddMovie(signer, movieId, movieName, nonce) {
 //     const domain = {
 //         name: "VotingNFT",

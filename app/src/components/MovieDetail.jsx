@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { voteForMovie } from "../utility/contractHelper.jsx";
+import { getVoteCountById, voteForMovie } from "../utility/contractHelper.jsx";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -17,6 +17,7 @@ const MovieDetail = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
   const [error, setError] = useState("");
+  const [voteCount, setVoteCount] = useState("N/A");
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -31,6 +32,19 @@ const MovieDetail = () => {
       }
     };
     fetchMovieDetails();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchVoteCount = async () => {
+      try {
+        const count = await getVoteCountById(id);
+        setVoteCount(count);
+      } catch (err) {
+        console.error(err);
+      }
+
+    }
+    fetchVoteCount();
   }, [id]);
 
   if (error) return <p className="text-red-500">{error}</p>;
@@ -66,6 +80,10 @@ const MovieDetail = () => {
             <p><strong>Rating:</strong> ⭐ {movie.vote_average?.toFixed(1) || "N/A"}</p>
             <p><strong>Runtime:</strong> {movie.runtime} min</p>
           </div>
+
+          <p className="text-light-200">
+            <strong>Current Votes: {voteCount}</strong>
+          </p>
 
           <button
             onClick={() => voteForMovie(movie.id)}
