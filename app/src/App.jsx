@@ -1,5 +1,5 @@
 import { React, use, useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link} from "react-router-dom";
 import Search from "./components/Search.jsx";
 import Spinner from "./components/Spinner.jsx";
 import MovieCard from "./components/MovieCard.jsx";
@@ -166,7 +166,7 @@ const App = () => {
                       {trendingMovies.map((movie, index) => (
                         <li key={movie.id}>
                           <p>{index + 1}</p>
-                          <a href={`/movie/${movie.id}`}>
+                          <Link to={`/movie/${movie.id}`}>
                             <img
                               src={
                                 movie.poster_path
@@ -175,7 +175,7 @@ const App = () => {
                               }
                               alt={movie.title}
                             />
-                          </a>
+                          </Link>
                           <span>{movie.votes}</span>
                         </li>
                       ))}
